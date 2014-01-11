@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.LoggerFactory;
+
 import play.Logger;
 import play.Play;
 import play.classloading.BytecodeCache;
@@ -21,6 +24,7 @@ import play.libs.IO;
  */
 public abstract class BaseTemplate extends Template {
 
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(BaseTemplate.class);
     public String compiledSource;
     public Map<Integer, Integer> linesMatrix = new HashMap<Integer, Integer>();
     public Set<Integer> doBodyLines = new HashSet<Integer>();
@@ -39,14 +43,24 @@ public abstract class BaseTemplate extends Template {
     }
 
     public void loadPrecompiled() {
+    	File file = null;
         try {
+        	//special case
+        	if("/conf/routes".equals(name)) {
+        		log.info("overriding routes location to precompiled="+name);
+        		name = "/precompiled/templates/conf/routes";
+        	}
+        	
         	//Remove the prefix "precompiled/templates/" because that is in the path now added
         	//when the program starts up or it never even gets here and just fails
-            File file = Play.getFile(name);
+            file = Play.getFile(name);
             byte[] code = IO.readContent(file);
             directLoad(code);
         } catch (Exception e) {
-            throw new RuntimeException("Cannot load precompiled template " + name, e);
+        	String path = null;
+        	if(file != null)
+        		path = file.getAbsolutePath();
+            throw new RuntimeException("Cannot load precompiled template " + name+" path="+path, e);
         }
     }
 

@@ -43,6 +43,7 @@ echo NOW stopping old server and starting new server
 ssh root@myextremestore.com <<EOF
     cd /opt/production
     ./store/conf/stopproduction.sh
+    mv store/logs/store.log store/logs/store.log.bak
     rm /opt/play1.3.x
     ln -s /opt/play-master$TIME /opt/play1.3.x
     chmod 755 ./store/conf/startproduction.sh
