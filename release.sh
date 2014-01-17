@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./switchLoggers.sh
+
 export TIME=`date +%s`
 
 echo BUILDING app with timestamp=$TIME

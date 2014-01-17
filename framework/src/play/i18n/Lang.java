@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
+import org.slf4j.LoggerFactory;
+
 import play.Logger;
 import play.Play;
 import play.mvc.Http;
@@ -16,6 +18,7 @@ import play.mvc.Http.Response;
  */
 public class Lang {
 
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(Lang.class);
     public static ThreadLocal<String> current = new ThreadLocal<String>();
 
     /**
@@ -31,6 +34,7 @@ public class Lang {
                 // we have a current request - lets try to resolve language from it
                 resolvefrom( currentRequest );
             } else {
+            	log.info("set default locale");
                 // don't have current request - just use default
                 setDefaultLocale();
             }
@@ -103,6 +107,7 @@ public class Lang {
         
         //Also, the current code completely did not support IE10 since IE sends in zh_Hans
 
+    	log.info("desired="+desiredLocales+" play langs="+Play.langs);
         // Exact match not found, try language-only match.
     	for(String theLocale : desiredLocales) {
     		theLocale = theLocale.replace("-", "_");
@@ -129,6 +134,7 @@ public class Lang {
             }
         }
 
+    	log.info("we did not find any matching locales");
         // We did not find a anything
         return null;
     }
@@ -155,7 +161,9 @@ public class Lang {
     private static void resolvefrom(Request request) {
         // Check a cookie
         String cn = Play.configuration.getProperty("application.lang.cookie", "PLAY_LANG");
+        log.info("resolveFrom current request.  lang.cookie="+cn);
         if (request.cookies.containsKey(cn)) {
+        	log.info("cookies contains cn");
             String localeFromCookie = request.cookies.get(cn).value;
             if (localeFromCookie != null && localeFromCookie.trim().length()>0) {
                 if (set(localeFromCookie)) {
@@ -170,8 +178,10 @@ public class Lang {
         }
         String closestLocaleMatch = findClosestMatch(request.acceptLanguage());
         if ( closestLocaleMatch != null ) {
+        	log.info("set closest match="+closestLocaleMatch);
             set(closestLocaleMatch);
         } else {
+        	log.info("set default");
             // Did not find anything - use default
             setDefaultLocale();
         }
