@@ -50,6 +50,7 @@ public abstract class BaseTemplate extends Template {
         		log.info("overriding routes location to precompiled="+name);
         		name = "/precompiled/templates/conf/routes";
         	} else if(name.startsWith("from_play/")) {
+        		log.info("renaming so that it kind find the play files from="+name+" to correct path");
         		//rename this so it loads the correct precompiled 404.txt or whatever is needed
         		name = "/precompiled/templates/"+name;
         	}
