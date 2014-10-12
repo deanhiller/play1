@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ -z "$1" ]]; then
+  echo "Usage: release.sh {server}"
+  exit 1
+fi
+
 HOST=$1
 
 set -x
@@ -8,12 +13,14 @@ export TIME=`date +%s`
 
 echo ZIPPING app with timestamp=$TIME
 
-cd ..
-rm play.zip
+cd framework
+ant
+cd ../..
 zip -r play.zip play1 -x "*.git*"
 
 echo SENDING zip file to production
 scp play.zip root@$HOST:/root/play.zip
+rm play.zip
 echo DONE SENDING, now deploying
 
 #This one allows us not to have to escape but then we can't go backwards I think and not escape when we need to
