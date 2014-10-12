@@ -3,6 +3,8 @@
 *.ser
 *.pyc
 
+modules/docviewer/lib
+
 # Files related to Play build or usage
 id
 dist
